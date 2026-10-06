@@ -1,0 +1,19 @@
+{
+  "configurations" : [
+    {
+      "id" : "F1E78B1B-44FF-48ED-A78F-C82B9E002E7A",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testInteropMode" : "complete",
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+
+  ],
+  "version" : 1
+}
