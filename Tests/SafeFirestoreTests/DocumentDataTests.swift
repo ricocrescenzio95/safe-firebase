@@ -6,10 +6,10 @@ import FirebaseFirestore
 struct DocumentDataTests {
   @Test
   func documentDataSupportsNestedScalarFields() {
-    let email: DocumentData<TestUser> = .init({ $0.profile.contact.email }, "ada@example.com")
-    let interval: DocumentData<TestUser> = .init({ $0.profile.settings.refreshInterval }, Int64(900))
-    let enabled: DocumentData<TestUser> = .init({ $0.profile.settings.notificationsEnabled }, true)
-    let precision: DocumentData<TestUser> = .init({ $0.profile.settings.precision }, 0.001)
+    let email: DocumentData<TestUser> = .init(\.profile.contact.email, "ada@example.com")
+    let interval: DocumentData<TestUser> = .init(\.profile.settings.refreshInterval, Int64(900))
+    let enabled: DocumentData<TestUser> = .init(\.profile.settings.notificationsEnabled, true)
+    let precision: DocumentData<TestUser> = .init(\..profile.settings.precision, 0.001)
     
     #expect(email.path == "profile.contact.email")
     #expect(email.value as? String == "ada@example.com")
@@ -23,9 +23,9 @@ struct DocumentDataTests {
 
   @Test
   func documentDataSupportsArraysAndSetsAtNestedPaths() {
-    let aliases: DocumentData<TestUser> = .init({ $0.profile.aliases }, ["ada", "a"])
-    let tags: DocumentData<TestUser> = .init({ $0.tags }, ["swift", "ios"])
-    let flags: DocumentData<TestUser> = .init({ $0.profile.flags }, Set(["trusted", "verified"]))
+    let aliases: DocumentData<TestUser> = .init(\.profile.aliases, ["ada", "a"])
+    let tags: DocumentData<TestUser> = .init(\.tags, ["swift", "ios"])
+    let flags: DocumentData<TestUser> = .init(\.profile.flags, Set(["trusted", "verified"]))
     
     #expect(aliases.path == "profile.aliases")
     #expect((aliases.value as? [Any])?.compactMap { $0 as? String } == ["ada", "a"])
@@ -41,9 +41,9 @@ struct DocumentDataTests {
     let payload = Data([0, 1, 2, 3])
     let role = TestRole.admin
     
-    let dateData: DocumentData<TestUser> = .init({ $0.profile.settings.createdAt }, date)
-    let payloadData: DocumentData<TestUser> = .init({ $0.profile.settings.payload }, payload)
-    let roleData: DocumentData<TestUser> = .init({ $0.profile.settings.role }, role)
+    let dateData: DocumentData<TestUser> = .init(\.profile.settings.createdAt, date)
+    let payloadData: DocumentData<TestUser> = .init(\.profile.settings.payload, payload)
+    let roleData: DocumentData<TestUser> = .init(\.profile.settings.role, role)
     
     #expect(dateData.path == "profile.settings.createdAt")
     #expect(dateData.value as? Date == date)

@@ -18,6 +18,10 @@ Just few things:
 - Use documentation comments as much as you can. Update DocC documentation as well.
 - Keep typed Firestore APIs and generated schemas covered by tests.
 
+## Firestore Emulator Tests
+
+
+
 ## Pull Request
 
 Open a PR and describe your solution, any hidden implementation or workaround (if any).
