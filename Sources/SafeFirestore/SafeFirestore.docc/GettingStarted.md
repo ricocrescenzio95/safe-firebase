@@ -1,10 +1,10 @@
 # Getting Started
 
-Define a Codable model and annotate it with @FirestoreModel. If the model belongs to a named collection, add @FirestoreCollection.
+Define a model and annotate it with @FirestoreModel. The macro provides Codable and Sendable automatically. Custom CodingKeys are supported and continue to control the Firestore field names. If the model belongs to a named collection, add @FirestoreCollection.
 
 ```swift
 @FirestoreCollection("users")
-struct User: Codable {
+struct User {
     let id: String
     var displayName: String
     var age: Int
@@ -13,7 +13,7 @@ struct User: Codable {
 }
   
 @FirestoreModel
-struct PersonalData: Codable {
+struct PersonalData {
     var firstName: String
     var lastName: String
 }
@@ -64,7 +64,7 @@ Computed properties are excluded by default:
 
 ```swift
 @FirestoreModel
-struct Session: Codable {
+struct Session {
     let token: String
 
     // computed property excluded by default

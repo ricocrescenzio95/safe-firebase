@@ -4,11 +4,11 @@ import FirebaseCore
 import FirebaseFirestore
 @testable import SafeFirestore
 
-struct AnyFirestoreValueTests {
+struct AnyFirestoreModelTests {
   @Test
-  func representsEveryFirestoreValueCase() {
+  func representsEveryFirestoreModelCase() {
     let timestamp = Timestamp(date: Date(timeIntervalSince1970: 100))
-    let values: [AnyFirestoreValue] = [
+    let values: [AnyFirestoreModel] = [
       .null,
       .bool(true),
       .int(42),
@@ -39,7 +39,7 @@ struct AnyFirestoreValueTests {
 
   @Test
   func typedAccessorsReturnNilForNonMatchingCases() {
-    let values: [AnyFirestoreValue] = [
+    let values: [AnyFirestoreModel] = [
       .null,
       .bool(true),
       .int(1),
@@ -55,14 +55,14 @@ struct AnyFirestoreValueTests {
       if value != .string("value") { #expect(value.string == nil) }
     }
 
-    #expect(!AnyFirestoreValue.bool(false).isNull)
-    #expect(AnyFirestoreValue.map([:]).array == nil)
-    #expect(AnyFirestoreValue.array([]).map == nil)
+    #expect(!AnyFirestoreModel.bool(false).isNull)
+    #expect(AnyFirestoreModel.map([:]).array == nil)
+    #expect(AnyFirestoreModel.array([]).map == nil)
   }
 
   @Test
   func convertsNestedArraysAndMapsRecursively() {
-    let value: AnyFirestoreValue = .map([
+    let value: AnyFirestoreModel = .map([
       "profile": .map([
         "name": .string("Ada"),
         "scores": .array([.int(10), .double(9.5)]),
@@ -85,22 +85,22 @@ struct AnyFirestoreValueTests {
   }
 
   @Test
-  func convertsNativeFirestoreValues() {
+  func convertsNativeFirestoreModels() {
     let timestamp = Timestamp(date: Date(timeIntervalSince1970: 100))
     let date = Date(timeIntervalSince1970: 200)
     let point = GeoPoint(latitude: 41.9, longitude: 12.5)
     let data = Data([10, 20])
 
-    #expect((AnyFirestoreValue.timestamp(timestamp).firestoreValue as? Timestamp)?.dateValue() == timestamp.dateValue())
-    #expect(AnyFirestoreValue.date(date).firestoreValue as? Date == date)
-    #expect((AnyFirestoreValue.geoPoint(point).firestoreValue as? GeoPoint)?.latitude == point.latitude)
-    #expect(AnyFirestoreValue.data(data).firestoreValue as? Data == data)
-    #expect(AnyFirestoreValue.null.firestoreValue is NSNull)
+    #expect((AnyFirestoreModel.timestamp(timestamp).firestoreValue as? Timestamp)?.dateValue() == timestamp.dateValue())
+    #expect(AnyFirestoreModel.date(date).firestoreValue as? Date == date)
+    #expect((AnyFirestoreModel.geoPoint(point).firestoreValue as? GeoPoint)?.latitude == point.latitude)
+    #expect(AnyFirestoreModel.data(data).firestoreValue as? Data == data)
+    #expect(AnyFirestoreModel.null.firestoreValue is NSNull)
   }
 
   @Test
   func supportsCodableForScalarsAndNestedValues() throws {
-    let values: [AnyFirestoreValue] = [
+    let values: [AnyFirestoreModel] = [
       .null,
       .bool(false),
       .int(-7),
@@ -112,13 +112,13 @@ struct AnyFirestoreValueTests {
 
     for value in values {
       let data = try JSONEncoder().encode(value)
-      let decoded = try JSONDecoder().decode(AnyFirestoreValue.self, from: data)
+      let decoded = try JSONDecoder().decode(AnyFirestoreModel.self, from: data)
       #expect(decoded == value)
     }
   }
 
   @Test
-  func decodesComplexNestedJSONAsFirestoreValues() throws {
+  func decodesComplexNestedJSONAsFirestoreModels() throws {
     let json = Data(#"""
     {
       "id": 42,
@@ -154,9 +154,9 @@ struct AnyFirestoreValueTests {
     }
     """#.utf8)
 
-    let decoded = try JSONDecoder().decode(AnyFirestoreValue.self, from: json)
+    let decoded = try JSONDecoder().decode(AnyFirestoreModel.self, from: json)
 
-    let expected: AnyFirestoreValue = .map([
+    let expected: AnyFirestoreModel = .map([
       "id": .int(42),
       "name": .string("Ada"),
       "active": .bool(true),
@@ -197,11 +197,11 @@ struct AnyFirestoreValueTests {
 
   @Test
   func preservesEqualityAndHashabilityForNestedValues() {
-    let first: AnyFirestoreValue = .map([
+    let first: AnyFirestoreModel = .map([
       "items": .array([.string("one"), .int(2)]),
       "enabled": .bool(true)
     ])
-    let second: AnyFirestoreValue = .map([
+    let second: AnyFirestoreModel = .map([
       "enabled": .bool(true),
       "items": .array([.string("one"), .int(2)])
     ])
@@ -212,11 +212,11 @@ struct AnyFirestoreValueTests {
 
   @Test
   func convertsArraysOfArraysAndMapsOfMapsRecursively() throws {
-    let nestedArrays: AnyFirestoreValue = .array([
+    let nestedArrays: AnyFirestoreModel = .array([
       .array([.int(1), .int(2)]),
       .array([.array([.string("deep")])])
     ])
-    let nestedMaps: AnyFirestoreValue = .map([
+    let nestedMaps: AnyFirestoreModel = .map([
       "outer": .map([
         "inner": .map([
           "value": .string("nested"),
@@ -241,19 +241,19 @@ struct AnyFirestoreValueTests {
     #expect((innerMap?["numbers"] as? [Any])?.compactMap { $0 as? Int64 } == [3, 4])
 
     let encoded = try JSONEncoder().encode(nestedMaps)
-    let decoded = try JSONDecoder().decode(AnyFirestoreValue.self, from: encoded)
+    let decoded = try JSONDecoder().decode(AnyFirestoreModel.self, from: encoded)
     #expect(decoded == nestedMaps)
   }
 
   @Test
   func supportsQueryOperatorsForTypeErasedValues() {
-    let schema = AnyFirestoreValue.schema(path: ["payload"])
+    let schema = AnyFirestoreModel.schema(path: ["payload"])
 
     #expect((schema == .string("ready")).operation == .equal(.string("ready")))
     #expect((schema != .null).operation == .notEqual(.null))
     #expect((schema > .int(10)).operation == .greater(.int(10)))
     #expect((schema <= .double(99.5)).operation == .lessOrEqual(.double(99.5)))
-    let arraySchema = FirestoreSchema<[AnyFirestoreValue]>(_firestorePath: ["payload"])
+    let arraySchema = FirestoreSchema<[AnyFirestoreModel]>(_firestorePath: ["payload"])
     #expect(arraySchema.arrayContains(.string("swift")).operation == .arrayContains(.string("swift")))
     #expect(arraySchema.arrayContainsAny([.string("swift"), .string("firebase")]).operation == .arrayContainsAny([
       .string("swift"),
@@ -265,7 +265,7 @@ struct AnyFirestoreValueTests {
     ]))
     #expect(arraySchema.isIn([[.string("swift")]]).operation == .arrayIn([[.string("swift")]]))
 
-    let mapSchema = FirestoreSchema<[String: AnyFirestoreValue]>(_firestorePath: ["payload", "metadata"])
+    let mapSchema = FirestoreSchema<[String: AnyFirestoreModel]>(_firestorePath: ["payload", "metadata"])
     #expect((mapSchema == ["source": .string("test")]).operation == .mapEqual([
       "source": .string("test")
     ]))
@@ -278,7 +278,7 @@ struct AnyFirestoreValueTests {
 
   @Test
   func exposesSchemaForNestedValuePaths() {
-    let schema = AnyFirestoreValue.schema(path: ["payload"])
+    let schema = AnyFirestoreModel.schema(path: ["payload"])
     let nested = schema["profile"]["name"]
 
     #expect(nested._firestorePath == ["payload", "profile", "name"])

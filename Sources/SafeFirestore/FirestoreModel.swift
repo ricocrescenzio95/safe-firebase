@@ -3,11 +3,14 @@ import FirebaseFirestore
 
 /// A type that can expose a type-safe Firestore schema.
 ///
-/// Apply ``FirestoreModel()`` to a `Codable` model to generate its schema.
+/// Apply ``FirestoreModel()`` to a model to generate its schema. ``FirestoreModel``
+/// already inherits `Codable` and `Sendable`, so neither conformance needs to be
+/// written explicitly. Custom `CodingKeys` are supported and continue to define
+/// the Firestore field names.
 ///
 /// ```swift
 /// @FirestoreModel
-/// struct User: Codable {
+/// struct User {
 ///     var name: String
 ///     var age: Int
 /// }
@@ -18,13 +21,16 @@ public protocol FirestoreModel<Schema>: Sendable, Codable {
   
   /// Creates the schema rooted at the supplied Firestore path.
   static func schema(path: [String]) -> Schema
+  
+  /// The value passed to the Firebase Firestore SDK.
+  var firestoreValue: Any { get }
 }
 
 /// A ``FirestoreModel`` that is stored in a named top-level Firestore collection.
 ///
 /// ```swift
 /// @FirestoreCollection("users")
-/// struct User: Codable {
+/// struct User {
 ///     var name: String
 ///     var age: Int
 /// }

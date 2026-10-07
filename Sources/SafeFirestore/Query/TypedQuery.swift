@@ -43,7 +43,7 @@ public extension TypedQueryProtocol {
   ///   - predicate: A closure selecting the field used for ordering.
   ///   - descending: Whether to sort descending.
   /// - Returns: A query containing the ordering constraint.
-  func order<T: FirestoreValue>(by predicate: (Model.Schema) -> FirestoreSchema<T>, descending: Bool = false) -> TypedQuery<Model> {
+  func order<T: FirestoreModel>(by predicate: (Model.Schema) -> FirestoreSchema<T>, descending: Bool = false) -> TypedQuery<Model> {
     let path = predicate(Model.schema(path: []))._firestorePath
     return TypedQuery(_query: _query.order(by: FieldPath(path), descending: descending))
   }
@@ -54,7 +54,7 @@ public extension TypedQueryProtocol {
   ///   - predicate: A closure selecting the field used for ordering.
   ///   - descending: Whether to sort descending.
   /// - Returns: A query containing the ordering constraint.
-  func order<T: FirestoreValue>(by predicate: (Model.Schema) -> FirestoreOptionalSchema<T>, descending: Bool = false) -> TypedQuery<Model> {
+  func order<T: FirestoreModel>(by predicate: (Model.Schema) -> FirestoreOptionalSchema<T>, descending: Bool = false) -> TypedQuery<Model> {
     let path = predicate(Model.schema(path: []))._firestorePath
     return TypedQuery(_query: _query.order(by: FieldPath(path), descending: descending))
   }
@@ -140,9 +140,10 @@ public extension TypedQueryProtocol {
   
   /// Executes the query and decodes its documents as the model type.
   ///
+  /// - Parameter source: The source from which to read the documents.
   /// - Returns: A typed query snapshot.
-  func getDocuments() async throws -> TypedQuerySnapshot<Model> where Model: Decodable {
-    try await TypedQuerySnapshot(snapshot: _query.getDocuments())
+  func getDocuments(source: FirestoreSource = .default) async throws -> TypedQuerySnapshot<Model> where Model: Decodable {
+    try await TypedQuerySnapshot(snapshot: _query.getDocuments(source: source))
   }
 }
 

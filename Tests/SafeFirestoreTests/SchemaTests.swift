@@ -1,7 +1,6 @@
 import Foundation
 import Testing
 @testable import SafeFirestore
-import MetaCodable
 import FirebaseFirestore
 
 struct SchemaTests {
@@ -26,7 +25,7 @@ struct SchemaTests {
   }
 
   @Test
-  func schemaSupportsDifferentFirestoreValueTypes() {
+  func schemaSupportsDifferentFirestoreModelTypes() {
     let schema = TestUser.schema(path: [])
     
     #expect((schema.profile.settings.notificationsEnabled == true).operation == .equal(true))

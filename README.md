@@ -1,10 +1,10 @@
 <p align="center">
-<img src="./Sources/SafeFirestore/SafeFirestore.docc/Resources/app-icon@.png" width="200">
+<img src="./Sources/SafeFirestore/SafeFirestore.docc/Resources/app-icon@3x.png" width="200">
 </p>
 
 # safe-firebase
 
-### Firebase for iOS, but type-safe
+### Strongly typed access to Cloud Firestore for Swift models, schemas, predicates, and queries.
 
 <p>
   <a href="https://github.com/ricocrescenzio95/safe-firebase/actions/workflows/tests.yml"><img src="https://github.com/ricocrescenzio95/safe-firebase/actions/workflows/tests.yml/badge.svg?branch=main"></a>
@@ -21,7 +21,7 @@ Firebase Firestore is flexible, but string-based collection names, field paths, 
 
 safe-firebase adds a type-safe Swift layer on top of Firebase Firestore:
 
-- **Generated schemas** — `@FirestoreModel` generates a schema from a `Codable` model.
+- **Generated schemas** — `@FirestoreModel` generates a schema and provides `Codable` and `Sendable` for the model.
 - **Typed collections** — `@FirestoreCollection` associates a model with a top-level collection.
 - **Typed queries** — access fields through key paths and use only operators supported by their types.
 - **Typed documents** — read snapshots and create updates without repeating string field paths.
@@ -58,13 +58,13 @@ For more details refer to [Adding Package Dependencies to Your App](https://deve
 
 ### Define a Firestore Model
 
-Annotate a `Codable` model with `@FirestoreModel`. Use `@FirestoreCollection` when the model belongs to a named top-level collection:
+Annotate a model with `@FirestoreModel`. The macro already provides `Codable` and `Sendable`; custom `CodingKeys` are supported and determine the Firestore field names. Use `@FirestoreCollection` when the model belongs to a named top-level collection:
 
 ```swift
 import SafeFirestore
 
 @FirestoreCollection("users")
-struct User: Codable {
+struct User {
     let id: String
     var displayName: String
     var age: Int
@@ -92,7 +92,7 @@ Use the typed document reference with Swift's async/await APIs:
 ```swift
 let reference = users.document("ada")
 
-try await reference.setData(User(
+try await reference.setData(from: User(
     id: "ada",
     displayName: "Ada",
     age: 36,
@@ -126,7 +126,7 @@ Use a typed field path when updating a document:
 ```swift
 let update = DocumentData<User>(\.displayName, "Ada")
 
-try await reference.updateData(update)
+try await reference.updateData([update])
 ```
 
 ### Exclude a Property
@@ -135,7 +135,7 @@ Computed properties are excluded by default. Use `@FirestoreExclude` for stored 
 
 ```swift
 @FirestoreModel
-struct Session: Codable {
+struct Session {
     let token: String
 
     var isExpired: Bool {
@@ -151,8 +151,8 @@ For advanced usage, refer to the full DocC documentation.
 
 ## Limitations
 
-- **Models must be `Codable`.** The generated schema and Firestore value conversion use the model's Codable representation.*
-- Firebase must still be configured by the host app.** safe-firebase provides the typed Firestore layer; it does not replace Firebase app configuration or security rules.
+- **Models must be `Codable`.** The generated schema and Firestore value conversion use the model's Codable representation.
+- **Firebase must still be configured by the host app.** safe-firebase provides the typed Firestore layer; it does not replace Firebase app configuration or security rules.
 
 ## Documentation
 

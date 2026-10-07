@@ -12,50 +12,50 @@ public struct DocumentData<Model: FirestoreModel> {
   
   /// Creates a field value for a scalar or single Firestore value.
   @_disfavoredOverload
-  public init<T: FirestoreValue>(_ field: (Model.Schema) -> FirestoreSchema<T>, _ value: T) {
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreSchema<T>, _ value: T) {
     self.path = DocumentDataField<Model>(field).path
     self.value = value.firestoreValue
   }
   
   /// Creates a field value for a scalar or single Firestore value.
   @_disfavoredOverload
-  public init<T: FirestoreValue>(_ field: (Model.Schema) -> FirestoreOptionalSchema<T>, _ value: T) {
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreOptionalSchema<T>, _ value: T) {
     self.path = DocumentDataField<Model>(field).path
     self.value = value.firestoreValue
   }
   
   /// Creates a field value for an array field.
-  public init<T: FirestoreValue>(_ field: (Model.Schema) -> FirestoreSchema<[T]>, _ value: [T]) {
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreSchema<[T]>, _ value: [T]) {
     self.path = DocumentDataField<Model>(field).path
     self.value = value.map(\.firestoreValue)
   }
 
   /// Creates a field value for an optional array field.
-  public init<T: FirestoreValue>(_ field: (Model.Schema) -> FirestoreOptionalSchema<[T]>, _ value: [T]) {
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreOptionalSchema<[T]>, _ value: [T]) {
     self.path = DocumentDataField<Model>(field).path
     self.value = value.map(\.firestoreValue)
   }
   
   /// Creates a field value for a set field.
-  public init<T: FirestoreValue>(_ field: (Model.Schema) -> FirestoreSchema<Set<T>>, _ value: Set<T>) {
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreSchema<Set<T>>, _ value: Set<T>) {
     self.path = DocumentDataField<Model>(field).path
     self.value = value.map(\.firestoreValue)
   }
   
   /// Creates a field value for an optional set field.
-  public init<T: FirestoreValue>(_ field: (Model.Schema) -> FirestoreOptionalSchema<Set<T>>, _ value: [T]) {
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreOptionalSchema<Set<T>>, _ value: [T]) {
     self.path = DocumentDataField<Model>(field).path
     self.value = value.map(\.firestoreValue)
   }
   
   /// Creates a field value for a map field.
-  public init<T: FirestoreValue>(_ field: (Model.Schema) -> FirestoreSchema<[String: T]>, _ value: [String: T]) {
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreSchema<[String: T]>, _ value: [String: T]) {
     self.path = DocumentDataField<Model>(field).path
     self.value = value.mapValues(\.firestoreValue)
   }
   
   /// Creates a field value for an optional map field.
-  public init<T: FirestoreValue>(_ field: (Model.Schema) -> FirestoreOptionalSchema<[String: T]>, _ value: [String: T]) {
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreOptionalSchema<[String: T]>, _ value: [String: T]) {
     self.path = DocumentDataField<Model>(field).path
     self.value = value.mapValues(\.firestoreValue)
   }

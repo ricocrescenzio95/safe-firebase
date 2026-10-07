@@ -3,15 +3,15 @@ import FirebaseFirestore
 
 /// A type-erased value that can be stored in Cloud Firestore.
 ///
-/// Use AnyFirestoreValue when a value's concrete Swift type is not known at
+/// Use AnyFirestoreModel when a value's concrete Swift type is not known at
 /// compile time, such as when inspecting arbitrary document data or building
 /// dynamic updates. The enum preserves the Firestore value kind and can be
 /// encoded and decoded with Codable.
 ///
 /// The firestoreValue property converts the value to the representation
 /// accepted by the Firebase Firestore SDK.
-public enum AnyFirestoreValue:
-    FirestoreValue,
+public enum AnyFirestoreModel:
+    FirestoreModel,
     FirestoreEquatable,
     FirestoreComparable,
     FirestoreArraySchemaValue,
@@ -20,11 +20,15 @@ public enum AnyFirestoreValue:
     FirestoreMapSchemaValue,
     Hashable
 {
+  public static func schema(path: [String]) -> FirestoreSchema<AnyFirestoreModel> {
+    FirestoreSchema(_firestorePath: path)
+  }
+  
   /// The schema type associated with an arbitrary Firestore value.
   public typealias Schema = FirestoreSchema<Self>
 
   /// The element type used by collection schema conformances.
-  public typealias Element = AnyFirestoreValue
+  public typealias Element = AnyFirestoreModel
 
   /// A Firestore null value.
   case null
@@ -57,10 +61,10 @@ public enum AnyFirestoreValue:
   case data(Data)
 
   /// An ordered collection of Firestore values.
-  case array([AnyFirestoreValue])
+  case array([AnyFirestoreModel])
 
   /// A dictionary whose keys are Firestore field names.
-  case map([String: AnyFirestoreValue])
+  case map([String: AnyFirestoreModel])
 
   /// The value converted to a type accepted by the Firebase Firestore SDK.
   public var firestoreValue: Any {
@@ -102,8 +106,8 @@ public enum AnyFirestoreValue:
     else if let v = try? c.decode(GeoPoint.self) { self = .geoPoint(v) }
     else if let v = try? c.decode(DocumentReference.self) { self = .documentReference(v) }
     else if let v = try? c.decode(Data.self) { self = .data(v) }
-    else if let v = try? c.decode([AnyFirestoreValue].self) { self = .array(v) }
-    else if let v = try? c.decode([String: AnyFirestoreValue].self) { self = .map(v) }
+    else if let v = try? c.decode([AnyFirestoreModel].self) { self = .array(v) }
+    else if let v = try? c.decode([String: AnyFirestoreModel].self) { self = .map(v) }
     else {
       throw DecodingError.dataCorruptedError(
         in: c,
@@ -194,13 +198,13 @@ public enum AnyFirestoreValue:
   }
 
   /// The array value, or nil when this value is not an array.
-  public var array: [AnyFirestoreValue]? {
+  public var array: [AnyFirestoreModel]? {
     guard case .array(let value) = self else { return nil }
     return value
   }
 
   /// The map value, or nil when this value is not a map.
-  public var map: [String: AnyFirestoreValue]? {
+  public var map: [String: AnyFirestoreModel]? {
     guard case .map(let value) = self else { return nil }
     return value
   }

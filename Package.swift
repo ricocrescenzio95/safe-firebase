@@ -9,7 +9,7 @@ let package = Package(
   products: [
     .library(.safeFirestore),
   ],
-  dependencies: [.swiftSyntax, .firebase, .metaCodable],
+  dependencies: [.swiftSyntax, .firebase],
   targets: [
     .safeFirebaseMacros,
     .safeFirebaseMacrosTests,
@@ -34,7 +34,7 @@ extension Target {
   static var safeFirestoreTests: Target {
     .testTarget(
       name: "SafeFirestoreTests",
-      dependencies: ["SafeFirestore", .metaCodable, .firebaseCore],
+      dependencies: ["SafeFirestore", .firebaseCore],
       swiftSettings: [
         .swiftLanguageMode(.v6)
       ],
@@ -54,12 +54,6 @@ extension Package.Dependency {
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk.git",
       from: "12.0.0"
-    )
-  }
-  static var metaCodable: Package.Dependency {
-    .package(
-      url: "https://github.com/SwiftyLab/MetaCodable.git",
-      from: "1.6.1"
     )
   }
 }
@@ -87,8 +81,6 @@ extension Target.Dependency {
   static let firebaseCore = Target.Dependency.product(name: "FirebaseCore", package: .firebase)
   static let database = Target.Dependency.product(name: "FirebaseDatabase", package: .firebase)
   static let functions = Target.Dependency.product(name: "FirebaseFunctions", package: .firebase)
-  
-  static let metaCodable = Target.Dependency.product(name: "MetaCodable", package: .metaCodable)
 }
 
 // MARK: - Macros

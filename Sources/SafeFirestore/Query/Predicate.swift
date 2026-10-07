@@ -17,7 +17,7 @@ public protocol FirestorePredicateExpression {
 /// ```
 ///
 /// Schema operators create values of this type.
-public struct FirestorePredicate<Value: FirestoreValue> {
+public struct FirestorePredicate<Value: FirestoreModel> {
   /// The operation applied to the field.
   public enum Operation {
     /// Matches values equal to the supplied value.

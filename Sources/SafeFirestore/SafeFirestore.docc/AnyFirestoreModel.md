@@ -1,6 +1,6 @@
-# ``AnyFirestoreValue``
+# ``AnyFirestoreModel``
 
-Use ``AnyFirestoreValue`` to represent a Firestore value when its concrete
+Use ``AnyFirestoreModel`` to represent a Firestore value when its concrete
 Swift type is not known ahead of time.
 
 It is useful for inspecting arbitrary document data, handling dynamic fields,
@@ -9,7 +9,7 @@ underlying Firestore kind.
 
 ## Supported values
 
-``AnyFirestoreValue`` supports:
+``AnyFirestoreModel`` supports:
 
 - null
 - Boolean and signed 64-bit integer values
@@ -19,15 +19,15 @@ underlying Firestore kind.
 - geographic points
 - document references
 - binary data
-- arrays of ``AnyFirestoreValue``
-- maps from field names to ``AnyFirestoreValue``
+- arrays of ``AnyFirestoreModel``
+- maps from field names to ``AnyFirestoreModel``
 
 ## Create values
 
 Create a value by selecting the matching case:
 
 ```swift
-let value: AnyFirestoreValue = .map([
+let value: AnyFirestoreModel = .map([
     "name": .string("Ada"),
     "age": .int(36),
     "isActive": .bool(true),
@@ -44,12 +44,12 @@ if let name = value.map?["name"]?.string {
 ```
 
 An accessor returns the underlying value for its matching case and nil
-otherwise. ``AnyFirestoreValue/isNull`` is the equivalent check for
+otherwise. ``AnyFirestoreModel/isNull`` is the equivalent check for
 .null.
 
 ## Convert to a Firestore value
 
-Use ``AnyFirestoreValue/firestoreValue`` when passing a value to an API that
+Use ``AnyFirestoreModel/firestoreValue`` when passing a value to an API that
 expects the Firebase SDK representation:
 
 ```swift
@@ -70,31 +70,31 @@ represented as a Firestore value, decoding throws a data-corrupted error.
 
 ### Value representation
 
-- ``AnyFirestoreValue/null``
-- ``AnyFirestoreValue/bool(_:)``
-- ``AnyFirestoreValue/int(_:)``
-- ``AnyFirestoreValue/double(_:)``
-- ``AnyFirestoreValue/string(_:)``
-- ``AnyFirestoreValue/timestamp(_:)``
-- ``AnyFirestoreValue/date(_:)``
-- ``AnyFirestoreValue/geoPoint(_:)``
-- ``AnyFirestoreValue/documentReference(_:)``
-- ``AnyFirestoreValue/data(_:)``
-- ``AnyFirestoreValue/array(_:)``
-- ``AnyFirestoreValue/map(_:)``
+- ``AnyFirestoreModel/null``
+- ``AnyFirestoreModel/bool(_:)``
+- ``AnyFirestoreModel/int(_:)``
+- ``AnyFirestoreModel/double(_:)``
+- ``AnyFirestoreModel/string(_:)``
+- ``AnyFirestoreModel/timestamp(_:)``
+- ``AnyFirestoreModel/date(_:)``
+- ``AnyFirestoreModel/geoPoint(_:)``
+- ``AnyFirestoreModel/documentReference(_:)``
+- ``AnyFirestoreModel/data(_:)``
+- ``AnyFirestoreModel/array(_:)``
+- ``AnyFirestoreModel/map(_:)``
 
 ### Inspection and conversion
 
-- ``AnyFirestoreValue/firestoreValue``
-- ``AnyFirestoreValue/isNull``
-- ``AnyFirestoreValue/bool``
-- ``AnyFirestoreValue/int``
-- ``AnyFirestoreValue/double``
-- ``AnyFirestoreValue/string``
-- ``AnyFirestoreValue/timestamp``
-- ``AnyFirestoreValue/date``
-- ``AnyFirestoreValue/geoPoint``
-- ``AnyFirestoreValue/documentReference``
-- ``AnyFirestoreValue/data``
-- ``AnyFirestoreValue/array``
-- ``AnyFirestoreValue/map``
+- ``AnyFirestoreModel/firestoreValue``
+- ``AnyFirestoreModel/isNull``
+- ``AnyFirestoreModel/bool``
+- ``AnyFirestoreModel/int``
+- ``AnyFirestoreModel/double``
+- ``AnyFirestoreModel/string``
+- ``AnyFirestoreModel/timestamp``
+- ``AnyFirestoreModel/date``
+- ``AnyFirestoreModel/geoPoint``
+- ``AnyFirestoreModel/documentReference``
+- ``AnyFirestoreModel/data``
+- ``AnyFirestoreModel/array``
+- ``AnyFirestoreModel/map``

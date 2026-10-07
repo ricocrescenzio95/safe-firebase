@@ -10,6 +10,12 @@ struct FirestoreModelMacro: ExtensionMacro {
   /// Matched against the last component of the attribute name,
   /// so `@DocumentID` and `@FirebaseFirestore.DocumentID` are treated the same.
   private static let excludedAttributes: Set<String> = ["FirestoreExclude", "DocumentID"]
+
+  /// Raw values supported by the standard FirestoreModel conformances.
+  private static let supportedRawValueTypes: Set<String> = [
+    "String", "Int", "Int8", "Int16", "Int32", "Int64",
+    "Float", "Float16", "Double"
+  ]
   
   private struct Property {
     let name: String
@@ -26,6 +32,57 @@ struct FirestoreModelMacro: ExtensionMacro {
     conformingTo protocols: [TypeSyntax],
     in context: some MacroExpansionContext
   ) throws -> [ExtensionDeclSyntax] {
+    let isFirestoreCollection = node.attributeName.trimmedDescription == "FirestoreCollection"
+    
+    if isFirestoreCollection {
+      guard decl.as(StructDeclSyntax.self) != nil || decl.as(ClassDeclSyntax.self) != nil
+      else {
+        error(
+          "@\(node.attributeName.trimmedDescription) can only be applied to a struct or class",
+          macro: Self.self,
+          node: decl,
+          context: context
+        )
+        return []
+      }
+    } else {
+      guard decl.as(StructDeclSyntax.self) != nil
+        || decl.as(ClassDeclSyntax.self) != nil
+        || decl.as(EnumDeclSyntax.self) != nil
+      else {
+        error(
+          "@\(node.attributeName.trimmedDescription) can only be applied to a struct, class, or enum",
+          macro: Self.self,
+          node: decl,
+          context: context
+        )
+        return []
+      }
+    }
+
+    if let enumDecl = decl.as(EnumDeclSyntax.self) {
+      guard let rawValueType = rawValueType(of: enumDecl) else {
+        error(
+          "@FirestoreModel enums must declare a supported raw value, or implement FirestoreModel manually",
+          macro: Self.self,
+          node: enumDecl,
+          context: context
+        )
+        return []
+      }
+
+      let rawTypeName = rawValueType.split(separator: ".").last.map(String.init) ?? rawValueType
+      guard supportedRawValueTypes.contains(rawTypeName) else {
+        error(
+          "Raw value type '\(rawValueType)' is not supported by @FirestoreModel; implement FirestoreModel manually",
+          macro: Self.self,
+          node: enumDecl,
+          context: context
+        )
+        return []
+      }
+    }
+
     let access = memberAccess(of: decl.modifiers)
         
     var result: [ExtensionDeclSyntax] = [
@@ -52,7 +109,9 @@ struct FirestoreModelMacro: ExtensionMacro {
   ) -> ExtensionDeclSyntax {
     // One accessor per stored property. The compiler resolves `SchemaOf<T>`:
     // a `FirestoreSchema<T>` for Firestore values, a nested schema for models.
-    let accessors = properties(of: decl, context: context)
+    let modelProperties = properties(of: decl, context: context)
+    
+    let accessors = modelProperties
       .map { p in
         """
         \(p.access)var \(p.name): SchemaOf<\(p.type)> {
@@ -62,23 +121,70 @@ struct FirestoreModelMacro: ExtensionMacro {
       }
       .joined(separator: "\n")
     
-    let ext: DeclSyntax = """
-      extension \(type): SafeFirestore::FirestoreModel {
+    let firestoreValues: String
+    let isEnum = decl.as(EnumDeclSyntax.self) != nil
+    if isEnum {
+      firestoreValues = "rawValue.firestoreValue"
+    } else {
+      firestoreValues = modelProperties
+        .map { p in
+          "CodingKeys.\(p.name).stringValue: \(p.name).firestoreValue"
+        }
+        .joined(separator: ",\n")
+    }
+    
+    let schemaDeclaration: DeclSyntax = if isEnum {
+        """
+        \(raw: access)static func schema(path: [String]) -> SafeFirestore::FirestoreSchema<Self> {
+            .init(_firestorePath: path)
+        }
+        """
+    } else {
+        """
         \(raw: access)static func schema(path: [String]) -> FirestoreSchema {
           FirestoreSchema(path: path)
         }
-      
-        \(raw: access)var firestoreValue: Any { self }
-      
+        
         \(raw: access)struct FirestoreSchema: FirestoreSchemaProtocol<\(type)> {
           \(raw: access)let _firestorePath: [String]
           \(raw: access)init(path: [String] = []) { self._firestorePath = path }
-      
+        
           \(raw: accessors)
         }
+        """
+    }
+    
+    let firestoreValueDeclaration: DeclSyntax = if isEnum {
+        """
+        \(raw: access)var firestoreValue: Any { 
+          \(raw: firestoreValues) 
+        }
+        """
+    } else {
+        """
+        \(raw: access)var firestoreValue: Any {
+          [
+            \(raw: firestoreValues)
+          ]
+        }
+        """
+    }
+    
+    let ext: DeclSyntax = """
+      extension \(type): SafeFirestore::FirestoreModel {
+        \(raw: firestoreValueDeclaration)
+        \(raw: schemaDeclaration)
       }
       """
+  
     return ext.cast(ExtensionDeclSyntax.self)
+  }
+
+  private static func rawValueType(of enumDecl: EnumDeclSyntax) -> String? {
+    enumDecl.inheritanceClause?.inheritedTypes.first {
+      let name = $0.type.trimmedDescription
+      return name != "Codable" && name != "Encodable" && name != "Decodable"
+    }?.type.trimmedDescription
   }
   
   /// Generates the `FirestoreCollection` conformance with the collection name.

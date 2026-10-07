@@ -1,7 +1,6 @@
 import Foundation
 import Testing
 @testable import SafeFirestore
-import MetaCodable
 import FirebaseFirestore
 
 struct DocumentDataTests {

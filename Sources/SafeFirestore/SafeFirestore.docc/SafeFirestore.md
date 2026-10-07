@@ -32,7 +32,7 @@ import FirebaseFirestore
 import SafeFirestore
 
 @FirestoreCollection("users")
-struct User: Codable, Sendable {
+struct User {
     let id: String
     var displayName: String
     var age: Int
@@ -134,8 +134,8 @@ for document in result.documents {
 - <doc:ModelsAndSchemas>
 - ``FirestoreSchema``
 - ``FirestoreOptionalSchema``
-- <doc:AnyFirestoreValue>
-- ``AnyFirestoreValue``
+- <doc:AnyFirestoreModel>
+- ``AnyFirestoreModel``
 
 ### Predicates and Operators
 
@@ -159,7 +159,7 @@ for document in result.documents {
 - ``TypedQueryProtocol/order(by:descending:)-((Model.Schema)->FirestoreSchema<T>,_)``
 - ``TypedQueryProtocol/limit(to:)``
 - ``TypedQueryProtocol/start(after:)``
-- ``TypedQueryProtocol/getDocuments()``
+- ``TypedQueryProtocol/getDocuments(source:)``
 
 ### Snapshots and Live Updates
 

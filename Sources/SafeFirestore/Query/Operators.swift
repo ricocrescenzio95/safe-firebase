@@ -2,35 +2,35 @@ import Foundation
 import FirebaseFirestore
 
 /// A schema whose value supports scalar equality predicates.
-public protocol FirestoreValuePredicateSchema<PredicateValue>: FirestoreSchemaProtocol {
-  associatedtype PredicateValue: FirestoreValue
+public protocol FirestoreModelPredicateSchema<PredicateValue>: FirestoreSchemaProtocol {
+  associatedtype PredicateValue: FirestoreModel
 }
 
 /// A scalar predicate schema whose value supports range comparisons.
-public protocol FirestoreComparablePredicateSchema: FirestoreValuePredicateSchema
+public protocol FirestoreComparablePredicateSchema: FirestoreModelPredicateSchema
 where PredicateValue: FirestoreComparable {}
 
 /// A schema for set-like array predicates such as arrayContains.
 public protocol FirestoreArrayPredicateSchema<Element>: FirestoreSchemaProtocol {
-  associatedtype Element: FirestoreValue
+  associatedtype Element: FirestoreModel
 }
 
 /// A schema for array membership operators.
 public protocol FirestoreArrayMembershipPredicateSchema<Element>: FirestoreSchemaProtocol {
-  associatedtype Element: FirestoreValue
+  associatedtype Element: FirestoreModel
 }
 
 /// A schema for array equality and array membership predicates.
 public protocol FirestoreArrayEqualityPredicateSchema: FirestoreSchemaProtocol {
-  associatedtype Element: FirestoreValue
+  associatedtype Element: FirestoreModel
 }
 
 /// A schema for dictionary equality predicates.
 public protocol FirestoreMapPredicateSchema<Element>: FirestoreSchemaProtocol {
-  associatedtype Element: FirestoreValue
+  associatedtype Element: FirestoreModel
 }
 
-extension FirestoreSchema: FirestoreValuePredicateSchema where Value: FirestoreValue {
+extension FirestoreSchema: FirestoreModelPredicateSchema where Value: FirestoreModel {
   public typealias PredicateValue = Value
 }
 
@@ -56,8 +56,8 @@ where Value: FirestoreMapSchemaValue {
   public typealias Element = Value.Element
 }
 
-extension FirestoreOptionalSchema: FirestoreValuePredicateSchema
-where Wrapped: FirestoreModel, Wrapped.Schema: FirestoreValuePredicateSchema {
+extension FirestoreOptionalSchema: FirestoreModelPredicateSchema
+where Wrapped: FirestoreModel, Wrapped.Schema: FirestoreModelPredicateSchema {
   public typealias PredicateValue = Wrapped.Schema.PredicateValue
 }
 
@@ -92,7 +92,7 @@ extension FirestoreSchema where Value: FirestoreMapSchemaValue {
   }
 }
 
-extension FirestoreValuePredicateSchema {
+extension FirestoreModelPredicateSchema {
   @_disfavoredOverload
   /// Creates an equality predicate for the schema path.
   public static func == (lhs: Self, rhs: PredicateValue) -> FirestorePredicate<PredicateValue> {
@@ -162,7 +162,7 @@ extension FirestoreComparablePredicateSchema {
   }
 }
 
-extension FirestoreValuePredicateSchema {
+extension FirestoreModelPredicateSchema {
   @_disfavoredOverload
   /// Creates an in predicate.
   public func isIn(_ values: [PredicateValue]) -> FirestorePredicate<PredicateValue> {

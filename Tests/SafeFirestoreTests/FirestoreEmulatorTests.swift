@@ -3,12 +3,10 @@ import Testing
 import FirebaseCore
 import FirebaseFirestore
 import SafeFirestore
-import MetaCodable
 
 private let firestoreEmulatorEnabled = ProcessInfo.processInfo.environment["FIRESTORE_EMULATOR_HOST"] != nil
 
 @FirestoreCollection("emulator-users")
-@Codable
 struct EmulatorUser {
   var displayName: String
   var score: Int
@@ -18,7 +16,7 @@ struct EmulatorUser {
 }
 
 @FirestoreModel
-struct EmulatorProfile: Codable {
+struct EmulatorProfile {
   var city: String
   var visits: Int64
 }

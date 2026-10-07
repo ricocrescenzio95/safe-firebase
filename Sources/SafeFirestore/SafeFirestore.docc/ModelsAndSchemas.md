@@ -6,7 +6,7 @@ For a model such as:
 
 ```swift
 @FirestoreModel
-struct User: Codable {
+struct User {
     var displayName: String
     var age: Int
     var nickname: String?
@@ -23,7 +23,7 @@ let adults = users.where { $0.age >= 18 }
 let nicknameField = DocumentDataField<User>(\.nickname)
 ```
 
-A non-optional field is represented by FirestoreSchema. An optional field is represented by FirestoreOptionalSchema. This distinction controls which operators are available. Schema values are normally obtained as the closure parameter in `where`; use `DocumentDataField<Model>(\\.property)` when an API requires a reusable field path.
+A non-optional field is represented by FirestoreSchema. An optional field is represented by FirestoreOptionalSchema. This distinction controls which operators are available. Schema values are normally obtained as the closure parameter in `where`; use `DocumentDataField<Model>(\.property)` when an API requires a reusable field path.
 
 ## Nested models
 
@@ -31,13 +31,13 @@ Nested models are accessed through dynamic member lookup:
 
 ```swift
 @FirestoreModel
-struct Address: Codable {
+struct Address {
     var city: String
     var country: String
 }
 
 @FirestoreModel
-struct Customer: Codable {
+struct Customer {
     var name: String
     var address: Address
 }
@@ -67,7 +67,7 @@ Array, Set, and Dictionary properties retain their collection-specific capabilit
 
 ```swift
 @FirestoreModel
-struct Profile: Codable {
+struct Profile {
     var tags: [String]
     var roles: Set<String>
     var metadata: [String: String]

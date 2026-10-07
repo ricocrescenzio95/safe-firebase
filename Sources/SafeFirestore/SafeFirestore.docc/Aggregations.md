@@ -28,7 +28,7 @@ empty aggregation is represented by the result returned from Firestore.
 
 ```swift
 @FirestoreCollection("users")
-struct User: Codable {
+struct User {
     var age: Int
     var optionalScore: Double?
 }
