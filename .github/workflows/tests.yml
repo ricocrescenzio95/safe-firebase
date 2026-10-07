@@ -41,14 +41,3 @@ jobs:
 
       - name: Run Tests
         run: swift test --parallel
-
-      - name: Stop Firestore Emulator
-        if: always()
-        run: |
-          if [ -f /tmp/firestore-emulator.pid ]; then
-            kill "$(cat /tmp/firestore-emulator.pid)" || true
-          fi
-
-          if [ -f /tmp/firestore-emulator.log ]; then
-            cat /tmp/firestore-emulator.log
-          fi

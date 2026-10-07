@@ -20,6 +20,22 @@ Just few things:
 
 ## Firestore Emulator Tests
 
+The Firestore emulator tests require the following tools to be installed locally:
+
+- Xcode with Swift Package Manager support for this package.
+- Node.js and npm.
+- The Firebase CLI (`firebase-tools`), installed globally with `npm install --global firebase-tools`.
+- Java, required by the Firestore emulator.
+
+The shared `safe-firebase` Xcode scheme starts the Firestore emulator before tests and stops it afterward. Open the package in Xcode, select the `safe-firebase` scheme, and run **Product > Test**. The pre-action and post-action are stored in the repository, so contributors do not need to configure them locally. The scripts use the repository's `firebase.json`, start only the Firestore emulator on port `8080`, and store its PID and output under `/tmp`.
+
+To run the suite from Terminal instead of Xcode, install the same prerequisites, then start the emulator from the repository root:
+
+```bash
+firebase emulators:start --only firestore --project demo-safe-firebase
+```
+
+Leave that process running in one terminal and run `swift test` from the repository root in another. Stop the emulator with `Ctrl-C` when finished.
 
 
 ## Pull Request
