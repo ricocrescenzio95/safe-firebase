@@ -2,6 +2,7 @@ import SwiftCompilerPlugin
 import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxBuilder
+import SwiftBasicFormat
 import SwiftSyntaxMacros
 
 struct FirestoreModelMacro: ExtensionMacro {
@@ -99,7 +100,7 @@ struct FirestoreModelMacro: ExtensionMacro {
   }
   
   // MARK: - Generated extensions
-  
+
   /// Generates the `FirestoreModel` conformance and the nested schema type.
   private static func modelExtension(
     type: some TypeSyntaxProtocol,
@@ -111,16 +112,14 @@ struct FirestoreModelMacro: ExtensionMacro {
     // a `FirestoreSchema<T>` for Firestore values, a nested schema for models.
     let modelProperties = properties(of: decl, context: context)
     
-    let accessors = modelProperties
-      .map { p in
-        """
-        \(p.access)var \(p.name): SchemaOf<\(p.type)> {
-          (\(p.type)).schema(path: _firestorePath + [CodingKeys.\(p.name).stringValue])
-        }
-        """
+    let accessorSources = modelProperties.map { p in
+      """
+      \(p.access)var \(p.name): SchemaOf<\(p.type)> {
+        \(p.type).schema(path: _firestorePath + [CodingKeys.\(p.name).stringValue])
       }
-      .joined(separator: "\n")
-    
+      """
+    }
+
     let firestoreValues: String
     let isEnum = decl.as(EnumDeclSyntax.self) != nil
     if isEnum {
@@ -132,52 +131,64 @@ struct FirestoreModelMacro: ExtensionMacro {
         }
         .joined(separator: ",\n")
     }
-    
-    let schemaDeclaration: DeclSyntax = if isEnum {
-        """
-        \(raw: access)static func schema(path: [String]) -> SafeFirestore::FirestoreSchema<Self> {
-            .init(_firestorePath: path)
-        }
-        """
-    } else {
-        """
-        \(raw: access)static func schema(path: [String]) -> FirestoreSchema {
-          FirestoreSchema(path: path)
-        }
-        
-        \(raw: access)struct FirestoreSchema: FirestoreSchemaProtocol<\(type)> {
-          \(raw: access)let _firestorePath: [String]
-          \(raw: access)init(path: [String] = []) { self._firestorePath = path }
-        
-          \(raw: accessors)
-        }
-        """
-    }
-    
-    let firestoreValueDeclaration: DeclSyntax = if isEnum {
-        """
-        \(raw: access)var firestoreValue: Any { 
-          \(raw: firestoreValues) 
-        }
-        """
-    } else {
-        """
-        \(raw: access)var firestoreValue: Any {
-          [
-            \(raw: firestoreValues)
-          ]
-        }
-        """
-    }
-    
-    let ext: DeclSyntax = """
-      extension \(type): SafeFirestore::FirestoreModel {
-        \(raw: firestoreValueDeclaration)
-        \(raw: schemaDeclaration)
+
+    let firestoreValueDeclaration = if isEnum {
+      """
+      \(access)var firestoreValue: Any {
+        \(firestoreValues)
       }
       """
-  
-    return ext.cast(ExtensionDeclSyntax.self)
+    } else {
+      """
+      \(access)var firestoreValue: Any {
+        [
+          \(firestoreValues)
+        ]
+      }
+      """
+    }
+
+    let memberDeclarations: [DeclSyntax]
+    if isEnum {
+      let schemaFunction = """
+      \(access)static func schema(path: [String]) -> SafeFirestore::FirestoreSchema<Self> {
+        .init(_firestorePath: path)
+      }
+      """
+      memberDeclarations = [
+        formattedDecl(firestoreValueDeclaration),
+        formattedDecl(schemaFunction, leadingNewlines: 2)
+      ]
+    } else {
+      let schemaFunction = """
+      \(access)static func schema(path: [String]) -> FirestoreSchema {
+        FirestoreSchema(path: path)
+      }
+      """
+      let schemaStruct = makeSchemaStruct(
+        access: access,
+        type: type.trimmedDescription,
+        members: [
+          "\(access)let _firestorePath: [String]",
+          """
+          \(access)init(path: [String] = []) {
+            self._firestorePath = path
+          }
+          """
+        ] + accessorSources
+      )
+      memberDeclarations = [
+        formattedDecl(firestoreValueDeclaration),
+        formattedDecl(schemaFunction, leadingNewlines: 2),
+        schemaStruct.with(\.leadingTrivia, .newlines(2))
+      ]
+    }
+
+    return makeExtension(
+      type: type,
+      conformance: "SafeFirestore::FirestoreModel",
+      members: memberDeclarations
+    )
   }
 
   private static func rawValueType(of enumDecl: EnumDeclSyntax) -> String? {
@@ -208,16 +219,81 @@ struct FirestoreModelMacro: ExtensionMacro {
       return []
     }
     
-    let ext: DeclSyntax = """
-      extension \(type): SafeFirestore::FirestoreCollection {
-        \(raw: access)static var collectionName: String { \(raw: collection) }
-      }
-      """
-    return [ext.cast(ExtensionDeclSyntax.self)]
+    return [
+      makeExtension(
+        type: type,
+        conformance: "SafeFirestore::FirestoreCollection",
+        members: [formattedDecl("\(access)static var collectionName: String { \(collection) }")]
+      )
+    ]
   }
   
+  private static func formattedDecl(
+    _ source: String,
+    leadingNewlines: Int = 0
+  ) -> DeclSyntax {
+    let declaration = DeclSyntax(stringLiteral: source)
+      .formatted(using: BasicFormat(indentationWidth: .spaces(2)))
+      .cast(DeclSyntax.self)
+
+    guard leadingNewlines > 0 else { return declaration }
+    return declaration.with(\.leadingTrivia, .newlines(leadingNewlines))
+  }
+
+  private static func makeSchemaStruct(
+    access: String,
+    type: String,
+    members: [String]
+  ) -> DeclSyntax {
+    let memberBlock = MemberBlockSyntax(
+      members: MemberBlockItemListSyntax(
+        members.enumerated().map { index, member in
+          MemberBlockItemSyntax(
+            decl: formattedDecl(member, leadingNewlines: index >= 2 ? 2 : 0)
+          )
+        }
+      )
+    )
+
+    let declaration = DeclSyntax(
+      stringLiteral: "\(access)struct FirestoreSchema: FirestoreSchemaProtocol<\(type)> {}"
+    )
+      .cast(StructDeclSyntax.self)
+      .with(\.memberBlock, memberBlock)
+
+    return declaration
+      .formatted(using: BasicFormat(indentationWidth: .spaces(2)))
+      .cast(DeclSyntax.self)
+  }
+
+  private static func makeExtension(
+    type: some TypeSyntaxProtocol,
+    conformance: String,
+    members: [DeclSyntax]
+  ) -> ExtensionDeclSyntax {
+    let memberBlock = MemberBlockSyntax(
+      members: MemberBlockItemListSyntax(
+        members.map { MemberBlockItemSyntax(decl: $0) }
+      )
+    )
+
+    let inheritanceClause = InheritanceClauseSyntax(
+      inheritedTypes: InheritedTypeListSyntax([
+        InheritedTypeSyntax(type: TypeSyntax(stringLiteral: conformance))
+      ])
+    )
+
+    return ExtensionDeclSyntax(
+      extendedType: type,
+      inheritanceClause: inheritanceClause,
+      memberBlock: memberBlock
+    )
+    .formatted(using: BasicFormat(indentationWidth: .spaces(2)))
+    .cast(ExtensionDeclSyntax.self)
+  }
+
   // MARK: - Access level
-  
+
   /// Returns the explicit access level represented by a declaration's modifiers.
   /// An omitted or `internal` modifier is emitted without a keyword.
   private static func memberAccess(of modifiers: DeclModifierListSyntax) -> String {

@@ -71,6 +71,7 @@ extension Target.Dependency {
   )
   static let swiftSyntax = Target.Dependency.product(name: "SwiftSyntax", package: .swiftSyntax)
   static let swiftSyntaxBuilder = Target.Dependency.product(name: "SwiftSyntaxBuilder", package: .swiftSyntax)
+  static let swiftBasicFormat = Target.Dependency.product(name: "SwiftBasicFormat", package: .swiftSyntax)
   static let swiftDiagnostics = Target.Dependency.product(name: "SwiftDiagnostics", package: .swiftSyntax)
   static let swiftParser = Target.Dependency.product(
       name: "SwiftParser",
@@ -93,6 +94,7 @@ extension Target {
         .swiftCompilerPlugin,
         .swiftSyntax,
         .swiftSyntaxBuilder,
+        .swiftBasicFormat,
         .swiftDiagnostics,
         .swiftParser,
       ],

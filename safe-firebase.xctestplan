@@ -1,0 +1,32 @@
+{
+  "configurations" : [
+    {
+      "id" : "8AD3A7F8-EE2F-464E-BE8A-134C5543B0C0",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "testInteropMode" : "complete"
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "SafeFirestoreTests",
+        "name" : "SafeFirestoreTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "SafeFirebaseMacrosTests",
+        "name" : "SafeFirebaseMacrosTests"
+      }
+    }
+  ],
+  "version" : 1
+}
