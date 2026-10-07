@@ -1,3 +1,5 @@
+import FirebaseFirestore
+
 /// A typed field value used for direct document writes and updates.
 ///
 /// ```swift
@@ -24,6 +26,13 @@ public struct DocumentData<Model: FirestoreModel> {
     self.value = value.firestoreValue
   }
   
+  /// Creates a field value for a scalar or single Firestore value.
+  @_disfavoredOverload
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreOptionalSchema<T>, _ value: T?) {
+    self.path = DocumentDataField<Model>(field).path
+    self.value = value.firestoreValue
+  }
+  
   /// Creates a field value for an array field.
   public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreSchema<[T]>, _ value: [T]) {
     self.path = DocumentDataField<Model>(field).path
@@ -34,6 +43,17 @@ public struct DocumentData<Model: FirestoreModel> {
   public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreOptionalSchema<[T]>, _ value: [T]) {
     self.path = DocumentDataField<Model>(field).path
     self.value = value.map(\.firestoreValue)
+  }
+  
+  
+  /// Creates a field value for an optional array field.
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreOptionalSchema<[T]>, _ value: [T]?) {
+    self.path = DocumentDataField<Model>(field).path
+    self.value = if let value {
+      value.map(\.firestoreValue)
+    } else {
+      NSNull()
+    }
   }
   
   /// Creates a field value for a set field.
@@ -48,6 +68,16 @@ public struct DocumentData<Model: FirestoreModel> {
     self.value = value.map(\.firestoreValue)
   }
   
+  /// Creates a field value for an optional set field.
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreOptionalSchema<Set<T>>, _ value: [T]?) {
+    self.path = DocumentDataField<Model>(field).path
+    self.value = if let value {
+      value.map(\.firestoreValue)
+    } else {
+      NSNull()
+    }
+  }
+  
   /// Creates a field value for a map field.
   public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreSchema<[String: T]>, _ value: [String: T]) {
     self.path = DocumentDataField<Model>(field).path
@@ -58,6 +88,16 @@ public struct DocumentData<Model: FirestoreModel> {
   public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreOptionalSchema<[String: T]>, _ value: [String: T]) {
     self.path = DocumentDataField<Model>(field).path
     self.value = value.mapValues(\.firestoreValue)
+  }
+  
+  /// Creates a field value for an optional map field.
+  public init<T: FirestoreModel>(_ field: (Model.Schema) -> FirestoreOptionalSchema<[String: T]>, _ value: [String: T]?) {
+    self.path = DocumentDataField<Model>(field).path
+    self.value = if let value {
+      value.mapValues(\.firestoreValue)
+    } else {
+      NSNull()
+    }
   }
 }
 

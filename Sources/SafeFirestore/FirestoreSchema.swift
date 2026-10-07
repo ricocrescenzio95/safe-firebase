@@ -16,6 +16,10 @@ public protocol FirestoreSchemaProtocol<Value>: Sendable {
 public struct FirestoreSchema<Value>: FirestoreSchemaProtocol {
   /// The components of the Firestore field path.
   public let _firestorePath: [String]
+  
+  public init(_firestorePath: [String]) {
+    self._firestorePath = _firestorePath
+  }
 
   public subscript<Member>(
     dynamicMember keyPath: KeyPath<Value.Schema, Member>
@@ -33,6 +37,10 @@ public struct FirestoreOptionalSchema<Wrapped>: FirestoreSchemaProtocol {
   public typealias Value = Wrapped?
 
   public let _firestorePath: [String]
+  
+  public init(_firestorePath: [String]) {
+    self._firestorePath = _firestorePath
+  }
 
   public subscript<Member>(
     dynamicMember keyPath: KeyPath<Wrapped.Schema, Member>
