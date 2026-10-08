@@ -58,4 +58,43 @@ extension FirestoreEmulatorTests {
     ))
     #expect(task.isCancelled)
   }
+
+  @Test
+  @available(macOS 15.0, *)
+  func nonThrowingDocumentSnapshotsYieldResultsAndKeepTheIteratorActive() async throws {
+    let reference = firestore.collection(EmulatorUser.self)
+      .document("non-throwing-document-\(UUID().uuidString)")
+    var iterator = reference.nonThrowingSnapshots.makeAsyncIterator()
+
+    try await reference.setData(from: EmulatorUser(
+      displayName: "Initial", score: 1, active: true, labels: [], profile: nil
+    ))
+    let initial = await iterator.next()
+    #expect(try initial?.get().data().score == 1)
+
+    try await reference.updateData([.init(\.score, 2)])
+    let updated = await iterator.next()
+    #expect(try updated?.get().data().score == 2)
+  }
+
+  @Test
+  @available(macOS 15.0, *)
+  func nonThrowingQuerySnapshotsYieldResultsAndKeepTheIteratorActive() async throws {
+    let displayName = "Non-throwing-query-\(UUID().uuidString)"
+    let query = firestore.collection(EmulatorUser.self)
+      .where { $0.displayName == displayName }
+    var iterator = query.nonThrowingSnapshots.makeAsyncIterator()
+
+    let document = firestore.collection(EmulatorUser.self)
+      .document("non-throwing-query-\(UUID().uuidString)")
+    try await document.setData(from: EmulatorUser(
+      displayName: displayName, score: 1, active: true, labels: [], profile: nil
+    ))
+    let initial = await iterator.next()
+    #expect(try initial?.get().count == 1)
+
+    try await document.updateData([.init(\.score, 2)])
+    let updated = await iterator.next()
+    #expect(try updated?.get().documents.count == 1)
+  }
 }

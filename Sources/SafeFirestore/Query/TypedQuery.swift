@@ -145,6 +145,49 @@ public extension TypedQueryProtocol {
   func getDocuments(source: FirestoreSource = .default) async throws -> TypedQuerySnapshot<Model> where Model: Decodable {
     try await TypedQuerySnapshot(snapshot: _query.getDocuments(source: source))
   }
+  
+  // MARK: - Listen snapshots
+  
+  /// Attaches a listener for ``TypedQuerySnapshot`` events.
+  ///
+  /// - Parameters:
+  ///   - options: Sets snapshot listener options, including whether metadata-only changes should
+  ///     trigger snapshot events, the source to listen to, the executor to use to call the
+  ///     listener, or the activity to scope the listener to.
+  ///   - listener: The listener to attach.
+  /// - Returns: `ListenerRegistration` object that can be used to remove this listener.
+  func addSnapshotListener(
+    options: SnapshotListenOptions,
+    _ listener: @escaping (Result<TypedQuerySnapshot<Model>, any Error>) -> Void
+  ) -> any ListenerRegistration {
+    _query.addSnapshotListener(options: options) { snapshot, error in
+      if let error {
+        listener(.failure(error))
+      } else if let snapshot {
+        listener(.success(.init(snapshot: snapshot)))
+      }
+    }
+  }
+  
+  /// Attaches a listener for ``TypedQuerySnapshot`` events.
+  ///
+  /// - Parameters:
+  ///   - includeMetadataChanges: Whether metadata-only changes (i.e. only
+  ///     `DocumentSnapshot.metadata` changed) should trigger snapshot events.
+  ///   - listener: The listener to attach.
+  /// - Returns: `ListenerRegistration` object that can be used to remove this listener.
+  func addSnapshotListener(
+    includeMetadataChanges: Bool = false,
+    _ listener: @escaping (Result<TypedQuerySnapshot<Model>, any Error>) -> Void
+  ) -> any ListenerRegistration {
+    _query.addSnapshotListener(includeMetadataChanges: includeMetadataChanges) { snapshot, error in
+      if let error {
+        listener(.failure(error))
+      } else if let snapshot {
+        listener(.success(.init(snapshot: snapshot)))
+      }
+    }
+  }
 }
 
 public struct TypedAggregateQuery<Model: FirestoreModel> {
