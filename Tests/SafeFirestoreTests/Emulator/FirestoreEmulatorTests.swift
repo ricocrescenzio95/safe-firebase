@@ -29,7 +29,7 @@ struct FirestoreEmulatorTests {
     do {
       try await waitForFirestoreEmulator()
     } catch {
-      try Test.cancel("Firestore Emulator non disponibile: \(error)")
+      try Test.cancel("Firestore Emulator not available: \(error)")
     }
 
     try await clearFirestoreEmulator(projectID: projectID)

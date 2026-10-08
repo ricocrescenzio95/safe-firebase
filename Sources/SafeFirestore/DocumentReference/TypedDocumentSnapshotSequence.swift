@@ -80,6 +80,10 @@ public extension TypedDocumentReference {
       public mutating func next() async throws -> Element? {
         try await streamIterator.next()
       }
+      
+      public mutating func next(isolation actor: isolated (any Actor)?) async throws -> Element? {
+        try await streamIterator.next(isolation: actor)
+      }
     }
   }
 }
