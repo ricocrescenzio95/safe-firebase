@@ -27,6 +27,12 @@ public struct TypedQuery<Model: FirestoreModel>: TypedQueryProtocol {
 public extension TypedQueryProtocol {
   /// Filters documents using a type-safe predicate.
   ///
+  /// Use the schema provided by the closure to perform expressions such as:
+  /// ```swift
+  /// Firestore.firestore()
+  ///   .collection(User.self)
+  ///   .where { $0.active == true }
+  /// ```
   /// - Parameter predicate: A closure that builds a predicate from the model schema.
   /// - Returns: A query containing the requested filter.
   func `where`(_ predicate: (Model.Schema) throws -> some FirestorePredicateExpression) rethrows -> TypedQuery<Model> {

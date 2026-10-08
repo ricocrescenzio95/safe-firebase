@@ -6,7 +6,7 @@ public extension TypedDocumentReference {
   ///
   /// This stream emits a new ``TypedDocumentSnapshot`` every time the underlying data changes.
   /// If the underlying listener reports an error, the error is thrown and the sequence terminates.
-  /// Use ``nonThrowingSnapshots`` when an error should be emitted as a ``Result`` while the
+  /// Use ``nonThrowingSnapshots`` when an error should be emitted as a `Result` while the
   /// listener remains active.
   var snapshots: ThrowingDocumentSnapshotsSequence {
     snapshots(includeMetadataChanges: false)
@@ -99,8 +99,8 @@ extension TypedDocumentReference.ThrowingDocumentSnapshotsSequence.Iterator: Sen
 public extension TypedDocumentReference {
   /// A non-throwing asynchronous sequence of document snapshots.
   ///
-  /// This stream emits a ``Result`` for every listener event. A listener error is emitted as
-  /// ``Result/failure(_:)`` and does not terminate the sequence; subsequent snapshot events can
+  /// This stream emits a `Result` for every listener event. A listener error is emitted as
+  /// `Result.failure` and does not terminate the sequence; subsequent snapshot events can
   /// still be received. Use ``snapshots`` when an error should terminate iteration.
   var nonThrowingSnapshots: DocumentSnapshotsSequence {
     nonThrowingSnapshots(includeMetadataChanges: false)
@@ -108,10 +108,10 @@ public extension TypedDocumentReference {
   
   /// Creates a non-throwing asynchronous sequence of document snapshots.
   ///
-  /// Errors are delivered as ``Result/failure(_:)`` values and do not close the stream.
+  /// Errors are delivered as `Result` values and do not close the stream.
   /// - Parameter includeMetadataChanges: Whether to receive events for metadata-only changes.
   /// - Returns: A ``TypedDocumentReference/DocumentSnapshotsSequence`` whose elements are
-  ///   ``Result`` values.
+  ///   `Result` values.
   func nonThrowingSnapshots(includeMetadataChanges: Bool) -> DocumentSnapshotsSequence {
     DocumentSnapshotsSequence(self, includeMetadataChanges: includeMetadataChanges)
   }
@@ -176,7 +176,7 @@ public extension TypedDocumentReference {
 
       /// Produces the next element in the asynchronous sequence.
       ///
-      /// Returns a ``Result`` containing a ``TypedDocumentSnapshot`` or an error, or `nil` if
+      /// Returns a `Result` containing a ``TypedDocumentSnapshot`` or an error, or `nil` if
       /// the sequence has terminated. Errors do not terminate this sequence; they are values.
       /// - Returns: The next result, or `nil` after the listener has been cancelled.
       public mutating func next() async -> Element? {
