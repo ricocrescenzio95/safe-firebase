@@ -19,11 +19,7 @@ public enum AnyFirestoreModel:
     FirestoreSetSchemaValue,
     FirestoreMapSchemaValue,
     Hashable
-{
-  public static func schema(path: [String]) -> FirestoreSchema<AnyFirestoreModel> {
-    FirestoreSchema(_firestorePath: path)
-  }
-  
+{  
   /// The schema type associated with an arbitrary Firestore value.
   public typealias Schema = FirestoreSchema<Self>
 

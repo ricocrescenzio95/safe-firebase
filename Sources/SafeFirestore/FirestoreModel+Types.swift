@@ -8,76 +8,73 @@ public protocol FirestoreComparable: FirestoreModel {}
 public protocol FirestoreEquatable: FirestoreModel {}
 
 extension String: FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 extension Bool: FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 extension GeoPoint: FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<GeoPoint>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<GeoPoint> { .init(_firestorePath: path) }
 }
 extension DocumentReference: FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<DocumentReference>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<DocumentReference> { .init(_firestorePath: path) }
 }
 extension Data: FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 
 extension Int: FirestoreComparable, FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 extension Int64: FirestoreComparable, FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 extension Int32: FirestoreComparable, FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 extension Int16: FirestoreComparable, FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 extension Int8: FirestoreComparable, FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 
 extension Double: FirestoreComparable, FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 extension Float: FirestoreComparable, FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 extension Float16: FirestoreComparable, FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 
 extension Date: FirestoreComparable, FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Self> { .init(_firestorePath: path) }
 }
 extension Timestamp: FirestoreComparable, FirestoreModel, FirestoreEquatable {
+  public typealias Schema = FirestoreSchema<Timestamp>
   public var firestoreValue: Any { self }
-  public static func schema(path: [String]) -> FirestoreSchema<Timestamp> { .init(_firestorePath: path) }
 }
 
 extension Optional: FirestoreModel where Wrapped: FirestoreModel {
+  public typealias Schema = FirestoreOptionalSchema<Wrapped>
   /// The wrapped Firestore value, or NSNull when the optional is nil.
   public var firestoreValue: Any { self?.firestoreValue ?? NSNull() }
-    
-  public static func schema(path: [String]) -> FirestoreOptionalSchema<Wrapped> {
-    FirestoreOptionalSchema(_firestorePath: path)
-  }
 }
 extension Optional: FirestoreEquatable where Wrapped: FirestoreEquatable {}
 
@@ -112,27 +109,19 @@ extension Dictionary: FirestoreMapSchemaValue where Key == String, Value: Firest
 }
 
 extension Array: FirestoreModel where Element: FirestoreModel {
+  public typealias Schema = FirestoreSchema<Self>
+
   public var firestoreValue: Any { map(\.firestoreValue) }
-  
-  public static func schema(path: [String]) -> FirestoreSchema<Self> {
-    Schema(_firestorePath: path)
-  }
 }
 extension Array: FirestoreEquatable where Element: FirestoreEquatable {}
 
 extension Set: FirestoreModel where Element: FirestoreModel {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { map(\.firestoreValue) }
-  
-  public static func schema(path: [String]) -> FirestoreSchema<Self> {
-    Schema(_firestorePath: path)
-  }
 }
 
 extension Dictionary: FirestoreModel where Key == String, Value: FirestoreModel {
+  public typealias Schema = FirestoreSchema<Self>
   public var firestoreValue: Any { mapValues(\.firestoreValue) }
-  
-  public static func schema(path: [String]) -> FirestoreSchema<Self> {
-    Schema(_firestorePath: path)
-  }
 }
 extension Dictionary: FirestoreEquatable where Key == String, Value: FirestoreEquatable {}

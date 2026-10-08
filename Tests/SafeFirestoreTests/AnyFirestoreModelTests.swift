@@ -247,13 +247,13 @@ struct AnyFirestoreModelTests {
 
   @Test
   func supportsQueryOperatorsForTypeErasedValues() {
-    let schema = AnyFirestoreModel.schema(path: ["payload"])
+    let schema = AnyFirestoreModel.Schema(path: ["payload"])
 
     #expect((schema == .string("ready")).operation == .equal(.string("ready")))
     #expect((schema != .null).operation == .notEqual(.null))
     #expect((schema > .int(10)).operation == .greater(.int(10)))
     #expect((schema <= .double(99.5)).operation == .lessOrEqual(.double(99.5)))
-    let arraySchema = FirestoreSchema<[AnyFirestoreModel]>(_firestorePath: ["payload"])
+    let arraySchema = FirestoreSchema<[AnyFirestoreModel]>(path: ["payload"])
     #expect(arraySchema.arrayContains(.string("swift")).operation == .arrayContains(.string("swift")))
     #expect(arraySchema.arrayContainsAny([.string("swift"), .string("firebase")]).operation == .arrayContainsAny([
       .string("swift"),
@@ -265,7 +265,7 @@ struct AnyFirestoreModelTests {
     ]))
     #expect(arraySchema.isIn([[.string("swift")]]).operation == .arrayIn([[.string("swift")]]))
 
-    let mapSchema = FirestoreSchema<[String: AnyFirestoreModel]>(_firestorePath: ["payload", "metadata"])
+    let mapSchema = FirestoreSchema<[String: AnyFirestoreModel]>(path: ["payload", "metadata"])
     #expect((mapSchema == ["source": .string("test")]).operation == .mapEqual([
       "source": .string("test")
     ]))
@@ -278,7 +278,7 @@ struct AnyFirestoreModelTests {
 
   @Test
   func exposesSchemaForNestedValuePaths() {
-    let schema = AnyFirestoreModel.schema(path: ["payload"])
+    let schema = AnyFirestoreModel.Schema(path: ["payload"])
     let nested = schema["profile"]["name"]
 
     #expect(nested._firestorePath == ["payload", "profile", "name"])

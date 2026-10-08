@@ -6,6 +6,7 @@
 public protocol FirestoreSchemaProtocol<Value>: Sendable {
   associatedtype Value
   var _firestorePath: [String] { get }
+  init(path: [String])
 }
 
 /// A schema value for a non-optional Firestore value.
@@ -17,14 +18,14 @@ public struct FirestoreSchema<Value>: FirestoreSchemaProtocol {
   /// The components of the Firestore field path.
   public let _firestorePath: [String]
   
-  public init(_firestorePath: [String]) {
-    self._firestorePath = _firestorePath
+  public init(path: [String]) {
+    _firestorePath = path
   }
 
   public subscript<Member>(
     dynamicMember keyPath: KeyPath<Value.Schema, Member>
   ) -> Member where Value: FirestoreModel {
-    Value.schema(path: _firestorePath)[keyPath: keyPath]
+    Value.Schema(path: _firestorePath)[keyPath: keyPath]
   }
 }
 
@@ -38,13 +39,13 @@ public struct FirestoreOptionalSchema<Wrapped>: FirestoreSchemaProtocol {
 
   public let _firestorePath: [String]
   
-  public init(_firestorePath: [String]) {
-    self._firestorePath = _firestorePath
+  public init(path: [String]) {
+    _firestorePath = path
   }
 
   public subscript<Member>(
     dynamicMember keyPath: KeyPath<Wrapped.Schema, Member>
   ) -> Member where Wrapped: FirestoreModel {
-    Wrapped.schema(path: _firestorePath)[keyPath: keyPath]
+    Wrapped.Schema(path: _firestorePath)[keyPath: keyPath]
   }
 }

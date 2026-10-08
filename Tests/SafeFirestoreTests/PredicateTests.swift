@@ -6,7 +6,7 @@ import FirebaseFirestore
 struct PredicateTests {
   @Test
   func predicatesBuildExpectedOperations() {
-    let schema = TestUser.schema(path: [])
+    let schema = TestUser.Schema(path: [])
     
     #expect((schema.age == 21).operation == .equal(21))
     #expect((schema.age != 21).operation == .notEqual(21))
@@ -29,7 +29,7 @@ struct PredicateTests {
 
   @Test
   func compoundAndOrPredicatesRemainEquatable() {
-    let schema = TestUser.schema(path: [])
+    let schema = TestUser.Schema(path: [])
     let andPredicate = (schema.age >= 18) && (schema.tags.arrayContains("swift"))
     let orPredicate = (schema.nickname == "ada") || (schema.age < 18)
     
@@ -39,7 +39,7 @@ struct PredicateTests {
 
   @Test
   func complexSchemaExposesOnlyTheDesignatedOperators() {
-    let schema = OperatorMatrixModel.schema(path: [])
+    let schema = OperatorMatrixModel.Schema(path: [])
     let leaf = OperatorMatrixLeaf(
       score: 7,
       title: "primary",
@@ -103,7 +103,7 @@ struct PredicateTests {
 
   @Test
   func predicateExpressionsMaterializeEveryOperatorFamily() {
-    let schema = OperatorMatrixModel.schema(path: [])
+    let schema = OperatorMatrixModel.Schema(path: [])
     
     _ = (schema.count == 1).makeFilter()
     _ = (schema.count != 1).makeFilter()

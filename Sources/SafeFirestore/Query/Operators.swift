@@ -88,7 +88,7 @@ extension FirestoreSchema where Value: FirestoreMapSchemaValue {
   @_disfavoredOverload
   /// Returns the schema for a dictionary value at the specified key.
   public subscript(key: String) -> FirestoreSchema<Value.Element> {
-    FirestoreSchema<Value.Element>(_firestorePath: _firestorePath + [key])
+    FirestoreSchema<Value.Element>(path: _firestorePath + [key])
   }
 }
 

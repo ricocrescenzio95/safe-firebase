@@ -143,11 +143,11 @@ public struct DocumentDataField<Model: FirestoreModel> {
   
   /// Creates a field path for a scalar or single Firestore value.
   public init<T>(_ field: (Model.Schema) -> FirestoreSchema<T>) {
-    self.path = field(Model.schema(path: []))._firestorePath.joined(separator: ".")
+    self.path = field(Model.Schema(path: []))._firestorePath.joined(separator: ".")
   }
 
   /// Creates a field path for an optional scalar or model field.
   public init<T>(_ field: (Model.Schema) -> FirestoreOptionalSchema<T>) {
-    self.path = field(Model.schema(path: []))._firestorePath.joined(separator: ".")
+    self.path = field(Model.Schema(path: []))._firestorePath.joined(separator: ".")
   }
 }

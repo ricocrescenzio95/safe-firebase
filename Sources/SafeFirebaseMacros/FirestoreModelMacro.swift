@@ -115,7 +115,7 @@ struct FirestoreModelMacro: ExtensionMacro {
     let accessorSources = modelProperties.map { p in
       """
       \(p.access)var \(p.name): SchemaOf<\(p.type)> {
-        \(p.type).schema(path: _firestorePath + [CodingKeys.\(p.name).stringValue])
+        \(p.type).Schema(path: _firestorePath + [CodingKeys.\(p.name).stringValue])
       }
       """
     }
@@ -150,21 +150,14 @@ struct FirestoreModelMacro: ExtensionMacro {
 
     let memberDeclarations: [DeclSyntax]
     if isEnum {
-      let schemaFunction = """
-      \(access)static func schema(path: [String]) -> SafeFirestore::FirestoreSchema<Self> {
-        .init(_firestorePath: path)
-      }
+      let schemaTypealias = """
+      \(access)typealias Schema = SafeFirestore::FirestoreSchema<Self>
       """
       memberDeclarations = [
         formattedDecl(firestoreValueDeclaration),
-        formattedDecl(schemaFunction, leadingNewlines: 2)
+        formattedDecl(schemaTypealias, leadingNewlines: 2)
       ]
     } else {
-      let schemaFunction = """
-      \(access)static func schema(path: [String]) -> FirestoreSchema {
-        FirestoreSchema(path: path)
-      }
-      """
       let schemaStruct = makeSchemaStruct(
         access: access,
         type: type.trimmedDescription,
@@ -179,7 +172,6 @@ struct FirestoreModelMacro: ExtensionMacro {
       )
       memberDeclarations = [
         formattedDecl(firestoreValueDeclaration),
-        formattedDecl(schemaFunction, leadingNewlines: 2),
         schemaStruct.with(\.leadingTrivia, .newlines(2))
       ]
     }
@@ -256,7 +248,7 @@ struct FirestoreModelMacro: ExtensionMacro {
     )
 
     let declaration = DeclSyntax(
-      stringLiteral: "\(access)struct FirestoreSchema: FirestoreSchemaProtocol<\(type)> {}"
+      stringLiteral: "\(access)struct Schema: FirestoreSchemaProtocol<\(type)> {}"
     )
       .cast(StructDeclSyntax.self)
       .with(\.memberBlock, memberBlock)

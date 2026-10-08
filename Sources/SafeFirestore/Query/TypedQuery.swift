@@ -30,7 +30,7 @@ public extension TypedQueryProtocol {
   /// - Parameter predicate: A closure that builds a predicate from the model schema.
   /// - Returns: A query containing the requested filter.
   func `where`(_ predicate: (Model.Schema) throws -> some FirestorePredicateExpression) rethrows -> TypedQuery<Model> {
-    let resolved = try predicate(Model.schema(path: []))
+    let resolved = try predicate(Model.Schema(path: []))
     let filter = resolved.makeFilter()
     return TypedQuery(_query: _query.whereFilter(filter))
   }
@@ -44,7 +44,7 @@ public extension TypedQueryProtocol {
   ///   - descending: Whether to sort descending.
   /// - Returns: A query containing the ordering constraint.
   func order<T: FirestoreModel>(by predicate: (Model.Schema) -> FirestoreSchema<T>, descending: Bool = false) -> TypedQuery<Model> {
-    let path = predicate(Model.schema(path: []))._firestorePath
+    let path = predicate(Model.Schema(path: []))._firestorePath
     return TypedQuery(_query: _query.order(by: FieldPath(path), descending: descending))
   }
   
@@ -55,7 +55,7 @@ public extension TypedQueryProtocol {
   ///   - descending: Whether to sort descending.
   /// - Returns: A query containing the ordering constraint.
   func order<T: FirestoreModel>(by predicate: (Model.Schema) -> FirestoreOptionalSchema<T>, descending: Bool = false) -> TypedQuery<Model> {
-    let path = predicate(Model.schema(path: []))._firestorePath
+    let path = predicate(Model.Schema(path: []))._firestorePath
     return TypedQuery(_query: _query.order(by: FieldPath(path), descending: descending))
   }
   

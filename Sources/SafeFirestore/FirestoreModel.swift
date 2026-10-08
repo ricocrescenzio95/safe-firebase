@@ -19,9 +19,6 @@ public protocol FirestoreModel<Schema>: Sendable, Codable {
   /// The schema type generated for the model.
   associatedtype Schema: FirestoreSchemaProtocol
   
-  /// Creates the schema rooted at the supplied Firestore path.
-  static func schema(path: [String]) -> Schema
-  
   /// The value passed to the Firebase Firestore SDK.
   var firestoreValue: Any { get }
 }
@@ -52,7 +49,7 @@ public typealias SchemaOf<T: FirestoreModel> = T.Schema
 @attached(
   extension,
   conformances: FirestoreModel,
-  names: named(FirestoreSchema), named(schema(path:)), named(firestoreValue)
+  names: named(Schema), named(firestoreValue)
 )
 /// Generates the Firestore schema and ``FirestoreModel`` conformance for a model.
 public macro FirestoreModel() =
@@ -61,7 +58,7 @@ public macro FirestoreModel() =
 @attached(
   extension,
   conformances: FirestoreCollection, FirestoreModel,
-  names: named(collectionName), named(FirestoreSchema), named(schema(path:)), named(firestoreValue)
+  names: named(collectionName), named(Schema), named(firestoreValue)
 )
 /// Generates a Firestore schema and associates the model with a collection name.
 ///

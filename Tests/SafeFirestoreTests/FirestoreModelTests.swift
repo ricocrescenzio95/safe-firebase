@@ -142,6 +142,6 @@ struct FirestoreModelTests {
   }
 
   private func assertFirestoreComparable<Value: FirestoreComparable>(_ value: Value) {
-    #expect(Value.schema(path: ["value"])._firestorePath == ["value"])
+    #expect(Value.Schema(path: ["value"])._firestorePath == ["value"])
   }
 }

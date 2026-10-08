@@ -41,20 +41,20 @@ extension AnyTypedAggregateField {
   }
   
   public static func sum<T: TypedAggregateValue>(_ field: (Model.Schema) -> FirestoreSchema<T>) -> Self {
-    .init(aggregateField: .sum(FieldPath(field(Model.schema(path: []))._firestorePath)))
+    .init(aggregateField: .sum(FieldPath(field(Model.Schema(path: []))._firestorePath)))
   }
   
   public static func sum<T: TypedAggregateValue>(_ field: (Model.Schema) -> FirestoreOptionalSchema<T>) -> Self {
-    .init(aggregateField: .sum(FieldPath(field(Model.schema(path: []))._firestorePath)))
+    .init(aggregateField: .sum(FieldPath(field(Model.Schema(path: []))._firestorePath)))
   }
   
   public static func average<T: TypedAggregateValue>(_ field: (Model.Schema) -> FirestoreSchema<T>) -> Self {
-    .init(aggregateField: .average(FieldPath(field(Model.schema(path: []))._firestorePath)))
+    .init(aggregateField: .average(FieldPath(field(Model.Schema(path: []))._firestorePath)))
   }
   
   /// Creates a typed average aggregation for an optional field.
   public static func average<T: TypedAggregateValue>(_ field: (Model.Schema) -> FirestoreOptionalSchema<T>) -> Self {
-    .init(aggregateField: .average(FieldPath(field(Model.schema(path: []))._firestorePath)))
+    .init(aggregateField: .average(FieldPath(field(Model.Schema(path: []))._firestorePath)))
   }
 }
 
@@ -64,13 +64,13 @@ extension TypedAggregateField {
   /// Summing an Int field produces an Int result type, while summing a
   /// Double field produces a Double result type.
   public static func sum<T: TypedAggregateValue>(_ field: (Model.Schema) -> FirestoreSchema<T>) -> TypedAggregateField<Model, T> {
-    .init(aggregateField: .sum(FieldPath(field(Model.schema(path: []))._firestorePath)))
+    .init(aggregateField: .sum(FieldPath(field(Model.Schema(path: []))._firestorePath)))
   }
   
   /// Creates a sum aggregation whose result type matches the wrapped value
   /// type of the selected optional field.
   public static func sum<T: TypedAggregateValue>(_ field: (Model.Schema) -> FirestoreOptionalSchema<T>) -> TypedAggregateField<Model, T> {
-    .init(aggregateField: .sum(FieldPath(field(Model.schema(path: []))._firestorePath)))
+    .init(aggregateField: .sum(FieldPath(field(Model.Schema(path: []))._firestorePath)))
   }
 }
 
@@ -79,11 +79,11 @@ extension TypedAggregateField where ReturnValue == Double {
   ///
   /// Firestore returns averages as Double.
   public static func average<T: TypedAggregateValue>(_ field: (Model.Schema) -> FirestoreSchema<T>) -> Self {
-    .init(aggregateField: .average(FieldPath(field(Model.schema(path: []))._firestorePath)))
+    .init(aggregateField: .average(FieldPath(field(Model.Schema(path: []))._firestorePath)))
   }
   
   public static func average<T: TypedAggregateValue>(_ field: (Model.Schema) -> FirestoreOptionalSchema<T>) -> Self {
-    .init(aggregateField: .average(FieldPath(field(Model.schema(path: []))._firestorePath)))
+    .init(aggregateField: .average(FieldPath(field(Model.Schema(path: []))._firestorePath)))
   }
 }
 

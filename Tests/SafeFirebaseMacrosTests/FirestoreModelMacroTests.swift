@@ -26,18 +26,14 @@ struct FirestoreModelMacroTests {
           ]
         }
       
-        static func schema(path: [String]) -> FirestoreSchema {
-          FirestoreSchema(path: path)
-        }
-      
-        struct FirestoreSchema: FirestoreSchemaProtocol<User> {
+        struct Schema: FirestoreSchemaProtocol<User> {
           let _firestorePath: [String]
           init(path: [String] = []) {
             self._firestorePath = path
           }
       
           var name: SchemaOf<String> {
-            String.schema(path: _firestorePath + [CodingKeys.name.stringValue])
+            String.Schema(path: _firestorePath + [CodingKeys.name.stringValue])
           }
         }
       }
@@ -68,18 +64,14 @@ struct FirestoreModelMacroTests {
           ]
         }
       
-        static func schema(path: [String]) -> FirestoreSchema {
-          FirestoreSchema(path: path)
-        }
-      
-        struct FirestoreSchema: FirestoreSchemaProtocol<Profile> {
+        struct Schema: FirestoreSchemaProtocol<Profile> {
           let _firestorePath: [String]
           init(path: [String] = []) {
             self._firestorePath = path
           }
       
           var age: SchemaOf<Int> {
-            Int.schema(path: _firestorePath + [CodingKeys.age.stringValue])
+            Int.Schema(path: _firestorePath + [CodingKeys.age.stringValue])
           }
         }
       }
@@ -108,9 +100,7 @@ struct FirestoreModelMacroTests {
           rawValue.firestoreValue
         }
       
-        static func schema(path: [String]) -> SafeFirestore::FirestoreSchema<Self> {
-          .init(_firestorePath: path)
-        }
+        typealias Schema = SafeFirestore::FirestoreSchema<Self>
       }
       """,
       macros: macros,
@@ -139,18 +129,14 @@ struct FirestoreModelMacroTests {
           ]
         }
       
-        static func schema(path: [String]) -> FirestoreSchema {
-          FirestoreSchema(path: path)
-        }
-      
-        struct FirestoreSchema: FirestoreSchemaProtocol<User> {
+        struct Schema: FirestoreSchemaProtocol<User> {
           let _firestorePath: [String]
           init(path: [String] = []) {
             self._firestorePath = path
           }
       
           var name: SchemaOf<String> {
-            String.schema(path: _firestorePath + [CodingKeys.name.stringValue])
+            String.Schema(path: _firestorePath + [CodingKeys.name.stringValue])
           }
         }
       }
@@ -187,18 +173,14 @@ struct FirestoreModelMacroTests {
           ]
         }
       
-        static func schema(path: [String]) -> FirestoreSchema {
-          FirestoreSchema(path: path)
-        }
-      
-        struct FirestoreSchema: FirestoreSchemaProtocol<Profile> {
+        struct Schema: FirestoreSchemaProtocol<Profile> {
           let _firestorePath: [String]
           init(path: [String] = []) {
             self._firestorePath = path
           }
       
           var age: SchemaOf<Int> {
-            Int.schema(path: _firestorePath + [CodingKeys.age.stringValue])
+            Int.Schema(path: _firestorePath + [CodingKeys.age.stringValue])
           }
         }
       }
@@ -239,18 +221,14 @@ struct FirestoreModelMacroTests {
           ]
         }
       
-        static func schema(path: [String]) -> FirestoreSchema {
-          FirestoreSchema(path: path)
-        }
-      
-        struct FirestoreSchema: FirestoreSchemaProtocol<Account> {
+        struct Schema: FirestoreSchemaProtocol<Account> {
           let _firestorePath: [String]
           init(path: [String] = []) {
             self._firestorePath = path
           }
       
           var email: SchemaOf<String> {
-            String.schema(path: _firestorePath + [CodingKeys.email.stringValue])
+            String.Schema(path: _firestorePath + [CodingKeys.email.stringValue])
           }
         }
       }
@@ -346,11 +324,7 @@ struct FirestoreModelMacroTests {
           ]
         }
 
-        static func schema(path: [String]) -> FirestoreSchema {
-          FirestoreSchema(path: path)
-        }
-
-        struct FirestoreSchema: FirestoreSchemaProtocol<User> {
+        struct Schema: FirestoreSchemaProtocol<User> {
           let _firestorePath: [String]
           init(path: [String] = []) {
             self._firestorePath = path

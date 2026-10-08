@@ -6,7 +6,7 @@ import FirebaseFirestore
 struct SchemaTests {
   @Test
   func collectionMetadataAndDeeplyNestedSchemaUseCodingKeys() {
-    let schema = TestUser.schema(path: [])
+    let schema = TestUser.Schema(path: [])
     
     #expect(TestUser.collectionName == "users")
     #expect((schema.id == "user-1").path == ["id"])
@@ -26,7 +26,7 @@ struct SchemaTests {
 
   @Test
   func schemaSupportsDifferentFirestoreModelTypes() {
-    let schema = TestUser.schema(path: [])
+    let schema = TestUser.Schema(path: [])
     
     #expect((schema.profile.settings.notificationsEnabled == true).operation == .equal(true))
     #expect((schema.profile.settings.refreshInterval >= Int64(900)).operation == .greaterOrEqual(900))
@@ -39,7 +39,7 @@ struct SchemaTests {
 
   @Test
   func schemaUsesCustomCodingKeysForFirestorePaths() {
-    let schema = AliasedUser.schema(path: [])
+    let schema = AliasedUser.Schema(path: [])
 
     #expect(AliasedUser.collectionName == "aliased-users")
     #expect((schema.displayName == "Ada").path == ["display_name"])
@@ -48,7 +48,7 @@ struct SchemaTests {
 
   @Test
   func schemaExcludesPropertiesMarkedWithFirestoreExclude() {
-    let schema = TestProfile.schema(path: [])
+    let schema = TestProfile.Schema(path: [])
     
     #expect((schema.name == "Ada").path == ["name"])
     #expect((schema.city == "Rome").path == ["city"])
@@ -57,7 +57,7 @@ struct SchemaTests {
 
   @Test
   func schemaPathsSupportKeyPathsAndDynamicMembers() {
-    let schema = TestUser.schema(path: [])
+    let schema = TestUser.Schema(path: [])
     
     let keyPathField = DocumentDataField<TestUser>(\.profile.contact.coordinates.longitude)
     let closureField = DocumentDataField<TestUser>({ $0.profile.contact.coordinates.longitude })
@@ -79,7 +79,7 @@ struct SchemaTests {
 
   @Test
   func optionalAndNestedCollectionSchemasPreservePaths() {
-    let schema = OperatorMatrixModel.schema(path: [])
+    let schema = OperatorMatrixModel.Schema(path: [])
     
     #expect(schema.optionalLeaf.title.isNotNull.path == [
       "optionalLeaf",
@@ -94,7 +94,7 @@ struct SchemaTests {
 
   @Test
   func macroGeneratedSchemaCompilesWithMixedAccessModifiers() {
-    let schema = PublicAccessModel.schema(path: [])
+    let schema = PublicAccessModel.Schema(path: [])
     
     #expect((schema.internalValue == 1).path == ["internalValue"])
     #expect((schema.publicValue == "value").path == ["publicValue"])
