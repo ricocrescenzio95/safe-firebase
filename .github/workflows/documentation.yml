@@ -1,0 +1,58 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: documentation-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build DocC
+    runs-on: xcode-27
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Generate static documentation
+        run: >-
+          swift package
+          --allow-writing-to-directory .build/documentation
+          generate-documentation
+          --target SafeFirestore
+          --output-path .build/documentation
+          --transform-for-static-hosting
+          --hosting-base-path safe-firebase
+          --disable-indexing
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .build/documentation
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: xcode-27
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

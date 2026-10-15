@@ -9,7 +9,7 @@ let package = Package(
   products: [
     .library(.safeFirestore),
   ],
-  dependencies: [.swiftSyntax, .firebase],
+  dependencies: [.swiftSyntax, .firebase, .swiftDocCPlugin],
   targets: [
     .safeFirebaseMacros,
     .safeFirebaseMacrosTests,
@@ -44,6 +44,13 @@ extension Target {
 
 // MARK: - Package dependencies
 extension Package.Dependency {
+  static var swiftDocCPlugin: Package.Dependency {
+    .package(
+      url: "https://github.com/swiftlang/swift-docc-plugin",
+      from: "1.1.0"
+    )
+  }
+
   static var swiftSyntax: Package.Dependency {
     .package(
       url: "https://github.com/swiftlang/swift-syntax.git",
