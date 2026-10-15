@@ -37,6 +37,23 @@ jobs:
           --hosting-base-path safe-firebase
           --disable-indexing
 
+      - name: Redirect site root to SafeFirestore documentation
+        run: |
+          cat > .build/documentation/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta http-equiv="refresh" content="0; url=./documentation/safefirestore/">
+              <link rel="canonical" href="./documentation/safefirestore/">
+              <title>SafeFirestore Documentation</title>
+            </head>
+            <body>
+              <p><a href="./documentation/safefirestore/">Open SafeFirestore documentation</a></p>
+            </body>
+          </html>
+          HTML
+
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
