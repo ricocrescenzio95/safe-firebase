@@ -147,7 +147,7 @@ struct Session {
 }
 ```
 
-For advanced usage, refer to the full DocC documentation.
+For advanced usage, refer to the full [DocC documentation](https://ricocrescenzio95.github.io/safe-firebase/documentation/safefirestore/).
 
 ## Limitations
 
