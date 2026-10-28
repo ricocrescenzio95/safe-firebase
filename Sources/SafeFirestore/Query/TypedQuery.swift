@@ -108,22 +108,22 @@ public extension TypedQueryProtocol {
   // DocumentSnapshot variants
   
   /// Starts the result set at the supplied document snapshot.
-  func start(atDocument snapshot: TypedDocumentSnapshot<Model>) -> TypedQuery<Model> {
+  func start<D: TypedDocumentSnapshotProtocol>(atDocument snapshot: D) -> TypedQuery<Model> where D.Model == Model {
     TypedQuery(_query: _query.start(atDocument: snapshot._documentSnapshot))
   }
   
   /// Starts the result set after the supplied document snapshot.
-  func start(afterDocument snapshot: TypedDocumentSnapshot<Model>) -> TypedQuery<Model> {
+  func start<D: TypedDocumentSnapshotProtocol>(afterDocument snapshot: D) -> TypedQuery<Model> where D.Model == Model {
     TypedQuery(_query: _query.start(afterDocument: snapshot._documentSnapshot))
   }
   
   /// Ends the result set at the supplied document snapshot.
-  func end(atDocument snapshot: TypedDocumentSnapshot<Model>) -> TypedQuery<Model> {
+  func end<D: TypedDocumentSnapshotProtocol>(atDocument snapshot: D) -> TypedQuery<Model> where D.Model == Model {
     TypedQuery(_query: _query.end(atDocument: snapshot._documentSnapshot))
   }
   
   /// Ends the result set before the supplied document snapshot.
-  func end(beforeDocument snapshot: TypedDocumentSnapshot<Model>) -> TypedQuery<Model> {
+  func end<D: TypedDocumentSnapshotProtocol>(beforeDocument snapshot: D) -> TypedQuery<Model> where D.Model == Model {
     TypedQuery(_query: _query.end(beforeDocument: snapshot._documentSnapshot))
   }
   
