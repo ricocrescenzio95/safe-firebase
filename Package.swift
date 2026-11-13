@@ -60,7 +60,7 @@ extension Package.Dependency {
   static var firebase: Package.Dependency {
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk.git",
-      from: "12.0.0"
+      from: "12.0.0"..<"14.0.0"
     )
   }
 }
